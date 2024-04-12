@@ -1,5 +1,8 @@
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
+import org.apache.commons.csv.*;
 
 public class Cell {
     private String oem;
@@ -50,18 +53,22 @@ public class Cell {
 
     public static void main(String[] args) {
         HashMap<Integer, Cell> cellPhones = new HashMap<>();
-        String line;
         int id = 1;
 
-        try (BufferedReader br = new BufferedReader(new FileReader("cells.csv"))) {
-            br.readLine();
-
-            while ((line = br.readLine()) != null) {
-                String[] data = line.split(",", -1);
+        try (Reader in = Files.newBufferedReader(Paths.get("cells.csv"))) {
+            Iterable<CSVRecord> records = CSVFormat.DEFAULT
+                .withFirstRecordAsHeader()
+                .parse(in);
                 
-                Cell cell = new Cell(data[0], data[1], data[2], data[3], data[4], data[5], 
-                                    data[6], data[7], data[8], data[9], data[10], data[11]);
-                        
+            for (CSVRecord record : records) {
+                Cell cell = new Cell(
+                    record.get("oem"), record.get("model"), record.get("launch_announced"), 
+                    record.get("launch_status"), record.get("body_dimensions"), 
+                    record.get("body_weight"), record.get("body_sim"), record.get("display_type"), 
+                    record.get("display_size"), record.get("display_resolution"), 
+                    record.get("features_sensors"), record.get("platform_os")
+                );
+                
                 cellPhones.put(id++, cell);
             }
         } catch (IOException e) {
