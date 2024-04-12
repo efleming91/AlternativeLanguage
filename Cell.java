@@ -1,3 +1,6 @@
+import java.io.*;
+import java.util.*;
+
 public class Cell {
     private String oem;
     private String model;
@@ -29,5 +32,19 @@ public class Cell {
         this.platformOs = platformOs;
     }
 
-    
+    @Override
+    public String toString() {
+        return "oem=" + oem + 
+               ", model=" + model + 
+               ", launchAnnounced=" + launchAnnounced +
+               ", launchStatus=" + launchStatus + 
+               ", bodyDimensions=" + bodyDimensions + 
+               ", bodyWeight=" + bodyWeight +
+               ", bodySim=" + bodySim + 
+               ", displayType=" + displayType + 
+               ", displaySize=" + displaySize +
+               ", displayResolution=" + displayResolution + 
+               ", featuresSensors=" + featuresSensors + 
+               ", platformOs=" + platformOs;                
+    }
 }
