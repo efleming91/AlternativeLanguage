@@ -1,19 +1,22 @@
 import java.io.*;
+import java.util.*;
+import java.util.regex.Matcher;  
+import java.util.regex.Pattern;  
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
-import org.apache.commons.csv.*;
+import org.apache.commons.csv.*;  
+
 
 public class Cell {
     private String oem;
     private String model;
-    private String launchAnnounced;
+    private Integer launchAnnounced;
     private String launchStatus;
     private String bodyDimensions;
-    private String bodyWeight;
+    private Float bodyWeight;
     private String bodySim;
     private String displayType;
-    private String displaySize;
+    private Float displaySize;
     private String displayResolution;
     private String featuresSensors;
     private String platformOs;
@@ -21,18 +24,87 @@ public class Cell {
     public Cell(String oem, String model, String launchAnnounced, String launchStatus,
             String bodyDimensions, String bodyWeight, String bodySim, String displayType,
             String displaySize, String displayResolution, String featuresSensors, String platformOs) {
-        this.oem = oem.isEmpty() ? null : oem;
-        this.model = model.isEmpty() ? null : model;
-        this.launchAnnounced = launchAnnounced.isEmpty() ? null : launchAnnounced;
-        this.launchStatus = launchStatus.isEmpty() ? null : launchStatus;
-        this.bodyDimensions = bodyDimensions.isEmpty() ? null : bodyDimensions;
-        this.bodyWeight = bodyWeight.isEmpty() ? null : bodyWeight;
-        this.bodySim = bodySim.isEmpty() ? null : bodySim;
-        this.displayType = displayType.isEmpty() ? null : displayType;
-        this.displaySize = displaySize.isEmpty() ? null : displaySize;
-        this.displayResolution = displayResolution.isEmpty() ? null : displayResolution;
-        this.featuresSensors = featuresSensors.isEmpty() ? null : featuresSensors;
-        this.platformOs = platformOs.isEmpty() ? null : platformOs;
+        this.oem = cleanDefault(oem);
+        this.model = cleanDefault(model);
+        this.launchAnnounced = cleanLaunchAnnounced(cleanDefault(launchAnnounced));
+        this.launchStatus = cleanLaunchStatus(cleanDefault(launchStatus));
+        this.bodyDimensions = cleanDefault(bodyDimensions);
+        this.bodyWeight = cleanBodyWeight(cleanDefault(bodyWeight));
+        this.bodySim = cleanBodySim(bodySim);
+        this.displayType = cleanDefault(displayType);
+        this.displaySize = cleanDisplaySize(cleanDefault(displaySize));
+        this.displayResolution = cleanDefault(displayResolution);
+        this.featuresSensors = cleanFeatureSensors(featuresSensors);
+        this.platformOs = cleanPlatformOs(cleanDefault(platformOs));
+    }
+
+    private String cleanDefault(String data) {
+        if (data == null || data.trim().isEmpty() || data.equals("-")) {
+            return null;
+        }
+        return data.trim();
+    }
+
+    private Integer cleanLaunchAnnounced(String data) {
+        if (data != null && data.matches(".*\\d{4}.*")) {
+            Matcher m = Pattern.compile("(\\d{4})").matcher(data);
+            if (m.find()) {
+                return Integer.parseInt(m.group(1));
+            }
+        }
+        return null;
+    }
+
+    private String cleanLaunchStatus(String data) {
+        if (data != null && (data.equals("Discontinued") || data.equals("Cancelled"))) {
+            return data;
+        } else {
+            return cleanLaunchAnnounced(data) != null ? data : null;
+        }
+    }
+
+    private Float cleanBodyWeight(String data) {
+        if (data != null && data.matches("\\d+ g.*")) {
+            return Float.parseFloat(data.substring(0, data.indexOf(' ')));
+        }
+        return null;
+    }
+
+    private String cleanBodySim(String data) {
+        if (data != null && (data.equalsIgnoreCase("No") || data.equalsIgnoreCase("Yes"))) {
+            return null;
+        }
+        return cleanDefault(data);
+    }
+
+    private Float cleanDisplaySize(String data) {
+        if (data != null && data.matches("\\d+(\\.\\d+)? inches.*")) {
+            return Float.parseFloat(data.substring(0, data.indexOf(' ')));
+        }
+        return null;
+    }
+
+    private String cleanFeatureSensors(String data) {
+        if (data != null && data.matches("^\\d+(\\.\\d+)?$")) {
+            return null;
+        }
+        return cleanDefault(data);
+    }
+
+    private String cleanPlatformOs(String data) {
+        if (data != null) {
+            if (data.matches("^\\d+(\\.\\d+)?$")) {
+                return null;
+            }
+    
+            int index = data.indexOf(',');
+            if (index != -1) {
+                return data.substring(0, index).trim();
+            } else {
+                return data.trim();
+            }
+        }
+        return null;
     }
 
     @Override
@@ -75,11 +147,11 @@ public class Cell {
             System.out.println("Error reading file: " + e.getMessage());
         }
 
-        int count = 0;
+        //Testing
+        int count = 2;
         for (Map.Entry<Integer, Cell> entry : cellPhones.entrySet()) {
-            if (count >= 3)
-                break;
-            System.out.println("ID: " + entry.getKey() + "\n" + entry.getValue());
+            if (count == 847)
+                System.out.println("ID: " + entry.getKey() + "\n" + entry.getValue());
             count++;
         }
     }
