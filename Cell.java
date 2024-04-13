@@ -1,12 +1,13 @@
+// Import necessary libraries
 import java.io.*;
 import java.util.*;
-import java.util.regex.Matcher;  
-import java.util.regex.Pattern;  
+import java.util.regex.Matcher;  // Not really sure why this isn't covered by util.* call
+import java.util.regex.Pattern;  // ^^
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import org.apache.commons.csv.*;  
+import org.apache.commons.csv.*;  // Requires commons-csv-1.10.0.jar library file
 
-
+// Class representing full details of a cell phone 
 public class Cell {
     private String oem;
     private String model;
@@ -21,6 +22,7 @@ public class Cell {
     private String featuresSensors;
     private String platformOs;
 
+    // Constructor initializing data via cleaning methods
     public Cell(String oem, String model, String launchAnnounced, String launchStatus,
             String bodyDimensions, String bodyWeight, String bodySim, String displayType,
             String displaySize, String displayResolution, String featuresSensors, String platformOs) {
@@ -34,10 +36,12 @@ public class Cell {
         this.displayType = cleanDefault(displayType);
         this.displaySize = cleanDisplaySize(cleanDefault(displaySize));
         this.displayResolution = cleanDefault(displayResolution);
-        this.featuresSensors = cleanFeatureSensors(featuresSensors);
+        this.featuresSensors = cleanFeaturesSensors(featuresSensors);
         this.platformOs = cleanPlatformOs(cleanDefault(platformOs));
     }
 
+    // Basic cleaning of input string
+    // Checks for known null values and sets null if column is empty or filled by '-'
     private String cleanDefault(String data) {
         if (data == null || data.trim().isEmpty() || data.equals("-")) {
             return null;
@@ -45,6 +49,8 @@ public class Cell {
         return data.trim();
     }
 
+    // Cleaner for launch_announced column
+    // Checks for 4 digit-length year
     private Integer cleanLaunchAnnounced(String data) {
         if (data != null && data.matches(".*\\d{4}.*")) {
             Matcher m = Pattern.compile("(\\d{4})").matcher(data);
@@ -55,6 +61,9 @@ public class Cell {
         return null;
     }
 
+    // Cleaner for launch_status column
+    // Checks for "Discontinued" and "Cancelled" inputs, 
+    // otherwise sends to cleanLaunchAnnounced for further cleaning
     private String cleanLaunchStatus(String data) {
         if (data != null && (data.equals("Discontinued") || data.equals("Cancelled"))) {
             return data;
@@ -63,6 +72,8 @@ public class Cell {
         }
     }
 
+    // Cleaner for body_weight column
+    // Checks for number preceding a 'g' character
     private Float cleanBodyWeight(String data) {
         if (data != null && data.matches("\\d+ g.*")) {
             return Float.parseFloat(data.substring(0, data.indexOf(' ')));
@@ -70,6 +81,9 @@ public class Cell {
         return null;
     }
 
+    // Cleaner for body_sim column
+    // Checks for "No" or "Yes" inputs, 
+    // otherwise sends to cleanDefault for typical cleaning
     private String cleanBodySim(String data) {
         if (data != null && (data.equalsIgnoreCase("No") || data.equalsIgnoreCase("Yes"))) {
             return null;
@@ -77,6 +91,8 @@ public class Cell {
         return cleanDefault(data);
     }
 
+    // Cleaner for display_size column
+    // Checks for number preceding 'inches' text
     private Float cleanDisplaySize(String data) {
         if (data != null && data.matches("\\d+(\\.\\d+)? inches.*")) {
             return Float.parseFloat(data.substring(0, data.indexOf(' ')));
@@ -84,13 +100,19 @@ public class Cell {
         return null;
     }
 
-    private String cleanFeatureSensors(String data) {
+    // Cleaner for features_sensors column
+    // Checks if a number is all that is input, 
+    // otherwise sends to cleanDefault for typical cleaning
+    private String cleanFeaturesSensors(String data) {
         if (data != null && data.matches("^\\d+(\\.\\d+)?$")) {
             return null;
         }
         return cleanDefault(data);
     }
 
+    // Cleaner for platform_os column
+    // First checks if a number is all that is input
+    // Then strips everything after first comma
     private String cleanPlatformOs(String data) {
         if (data != null) {
             if (data.matches("^\\d+(\\.\\d+)?$")) {
@@ -107,6 +129,7 @@ public class Cell {
         return null;
     }
 
+    // Converts object details to string for printing
     @Override
     public String toString() {
         return "oem = " + oem + "\n" + 
@@ -127,11 +150,14 @@ public class Cell {
         HashMap<Integer, Cell> cellPhones = new HashMap<>();
         int id = 1;
 
+        // Reads in .csv file and handles each line
         try (Reader in = Files.newBufferedReader(Paths.get("cells.csv"))) {
+            // Uses Apache Commons CSV library to simplify csv parsing
             Iterable<CSVRecord> records = CSVFormat.DEFAULT
                 .withFirstRecordAsHeader()
                 .parse(in);
-                
+            
+            // Each line is turned into a Cell object and added to the HashMap    
             for (CSVRecord record : records) {
                 Cell cell = new Cell(
                     record.get("oem"), record.get("model"), record.get("launch_announced"), 
