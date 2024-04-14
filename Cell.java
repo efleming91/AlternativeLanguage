@@ -207,6 +207,10 @@ public class Cell {
 
     // Sums unique values of list of inputs
     public static int countUniqueValues(List<String> data) {
+        if (data == null) {
+            return 0;
+        }
+
         return new HashSet<>(data).size();
     }
 
@@ -265,11 +269,20 @@ public class Cell {
     public static int launchedMost(HashMap<Integer, Cell> cells) {
         Map<Integer, Integer> count = new HashMap<>();
         for (Cell cell : cells.values()) {
-            if (cell.launchAnnounced != null && cell.launchAnnounced > 1999) {
-                count.put(cell.launchAnnounced, count.getOrDefault(cell.launchAnnounced, 0) + 1);
+            if (cell.getLaunchStatus() != null && !cell.getLaunchStatus().equals("Discontinued") 
+                && !cell.getLaunchStatus().equals("Cancelled")) {
+                try {
+                    int year = Integer.parseInt(cell.getLaunchStatus());
+                    if (year > 1999) {
+                        count.put(year, count.getOrDefault(year, 0) + 1);
+                    }
+                } catch (NumberFormatException e) {
+                    // Do nothing
+                    // Catches and skips non-year lines
+                }
             }
         }
-
+    
         int maxYear = 0, maxCount = 0;
         for (Map.Entry<Integer, Integer> entry : count.entrySet()) {
             if (entry.getValue() > maxCount) {
