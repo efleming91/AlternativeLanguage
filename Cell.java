@@ -314,9 +314,12 @@ public class Cell {
         // Read in .csv file and handle each line
         try (Reader in = Files.newBufferedReader(path)) {
             // Use Apache Commons CSV library to simplify csv parsing
-            Iterable<CSVRecord> records = CSVFormat.DEFAULT
-                    .withFirstRecordAsHeader()
-                    .parse(in);
+            CSVFormat format = CSVFormat.DEFAULT.builder()
+                    .setHeader()
+                    .setSkipHeaderRecord(true)
+                    .build();
+
+            Iterable<CSVRecord> records = format.parse(in);
 
             // Check for issues with file
             if (!records.iterator().hasNext()) {
@@ -441,7 +444,7 @@ public class Cell {
         //Testing
 
         // Checking cleaning
-        /*
+        
         int count = 2;
         for (Map.Entry<Integer, Cell> entry : cellPhones.entrySet()) {
             if (count == 888) {
@@ -450,10 +453,10 @@ public class Cell {
             }
             count++;
         }
-        */
+        
 
         // Checking math
-        /*
+        
         List<Float> displaySize = new ArrayList<>();
         List<String> oem = new ArrayList<>();
         for (Cell cell : cellPhones.values()) {
@@ -464,10 +467,12 @@ public class Cell {
         System.out.println("Mean: " + calculateMean(displaySize));
         System.out.println("Median: " + calculateMedian(displaySize));
         System.out.println("Unique: " + countUniqueValues(oem));
-        */
+
+        System.out.println("");  // Just making output look nicer
+        
 
         // Checking Report questions
-        /*
+        
         String highestAvgOem = oemHighestAvg(cellPhones);
         System.out.println("Company with highest average weight: " + highestAvgOem);
 
@@ -479,6 +484,6 @@ public class Cell {
 
         int mostPhonesYear = launchedMost(cellPhones);
         System.out.println("Year with most phones launched after 1999: " + mostPhonesYear);
-        */
+        
     }
 }
