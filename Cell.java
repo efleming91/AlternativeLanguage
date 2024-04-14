@@ -108,7 +108,8 @@ public class Cell {
         if (data != null && (data.equals("Discontinued") || data.equals("Cancelled"))) {
             return data;
         } else {
-            return Integer.toString(cleanLaunchAnnounced(data));
+            Integer year = cleanLaunchAnnounced(data);
+            return (year != null) ? String.valueOf(year) : null; 
         }
     }
 
@@ -350,101 +351,9 @@ public class Cell {
             System.out.println("Error reading file: " + e.getMessage());
         }
 
-        // Validate final transformation types
-        boolean validData = true;
-        
-        for (Cell cell : cellPhones.values()) {
-            if (cell.getLaunchAnnounced() != null && !(cell.getLaunchAnnounced() instanceof Integer)) {
-                System.out.println("Data validation error: (" + cell.getOem() + " - " + cell.getModel() + ") launchedAnnounced is not an Integer.");
-                validData = false;
-                break;
-            }
-            if (cell.getBodyWeight() != null && !(cell.getBodyWeight() instanceof Float)) {
-                System.out.println("Data validation error: (" + cell.getOem() + " - " + cell.getModel() + ") bodyWeight is not a Float.");
-                validData = false;
-                break;
-            }
-            if (cell.getDisplaySize() != null && !(cell.getDisplaySize() instanceof Float)) {
-                System.out.println("Data validation error: (" + cell.getOem() + " - " + cell.getModel() + ") displaySize is not a Float.");
-                validData = false;
-                break;
-            }
-        }
-        if (!validData) {
-            return;
-        }
-        
-        // Validate missing or "-" data is replaced with null
-        for (Cell cell : cellPhones.values()) {
-            if (cell.getOem() != null && (cell.getOem().isEmpty() || cell.getOem().equals("-"))) {
-                System.out.println("Data validation error: (" + cell.getOem() + " - " + cell.getModel() + ") oem is empty or '-'.");
-                validData = false;
-                break;
-            }
-            if (cell.getModel() != null && (cell.getModel().isEmpty() || cell.getModel().equals("-"))) {
-                System.out.println("Data validation error: (" + cell.getOem() + " - " + cell.getModel() + ") model is empty or '-'.");
-                validData = false;
-                break;
-            }
-            if (cell.getLaunchAnnounced() != null && cell.getLaunchAnnounced() <= 0) {
-                System.out.println("Data validation error: (" + cell.getOem() + " - " + cell.getModel() + ") launchAnnounced contains a failed transformation.");
-                validData = false;
-                break;
-            }
-            if (cell.getLaunchStatus() != null && (cell.getLaunchStatus().isEmpty() || cell.getLaunchStatus().equals("-"))) {
-                System.out.println("Data validation error: (" + cell.getOem() + " - " + cell.getModel() + ") launchStatus is empty or '-'.");
-                validData = false;
-                break;
-            }
-            if (cell.getBodyDimensions() != null && (cell.getBodyDimensions().isEmpty() || cell.getBodyDimensions().equals("-"))) {
-                System.out.println("Data validation error: (" + cell.getOem() + " - " + cell.getModel() + ") bodyDimensions is empty or '-'.");
-                validData = false;
-                break;
-            }
-            if (cell.getBodyWeight() != null && cell.getBodyWeight().isNaN()) {
-                System.out.println("Data validation error: (" + cell.getOem() + " - " + cell.getModel() + ") bodyWeight contains non-numeric values.");
-                validData = false;
-                break;
-            }
-            if (cell.getBodySim() != null && (cell.getBodySim().isEmpty() || cell.getBodySim().equals("-"))) {
-                System.out.println("Data validation error: (" + cell.getOem() + " - " + cell.getModel() + ") bodySim is empty or '-'.");
-                validData = false;
-                break;
-            }
-            if (cell.getDisplayType() != null && (cell.getDisplayType().isEmpty() || cell.getDisplayType().equals("-"))) {
-                System.out.println("Data validation error: (" + cell.getOem() + " - " + cell.getModel() + ") displayType is empty or '-'.");
-                validData = false;
-                break;
-            }
-            if (cell.getDisplaySize() != null && cell.getDisplaySize().isNaN()) {
-                System.out.println("Data validation error: (" + cell.getOem() + " - " + cell.getModel() + ") displaySize contains non-numeric values.");
-                validData = false;
-                break;
-            }
-            if (cell.getDisplayResolution() != null && (cell.getDisplayResolution().isEmpty() || cell.getDisplayResolution().equals("-"))) {
-                System.out.println("Data validation error: (" + cell.getOem() + " - " + cell.getModel() + ") displayResolution is empty or '-'.");
-                validData = false;
-                break;
-            }
-            if (cell.getFeaturesSensors() != null && (cell.getFeaturesSensors().isEmpty() || cell.getFeaturesSensors().equals("-"))) {
-                System.out.println("Data validation error: (" + cell.getOem() + " - " + cell.getModel() + ") featuresSensors is empty or '-'.");
-                validData = false;
-                break;
-            }
-            if (cell.getPlatformOs() != null && (cell.getPlatformOs().isEmpty() || cell.getPlatformOs().equals("-"))) {
-                System.out.println("Data validation error: (" + cell.getOem() + " - " + cell.getModel() + ") platformOs is empty or '-'.");
-                validData = false;
-                break;
-            }
-        }
-        if (!validData) {
-            return;
-        }        
+        // Checks
 
-        //Testing
-
-        // Checking cleaning
-        
+        // Checking cleaning methods        
         int count = 2;
         for (Map.Entry<Integer, Cell> entry : cellPhones.entrySet()) {
             if (count == 888) {
@@ -452,11 +361,9 @@ public class Cell {
                 break;
             }
             count++;
-        }
-        
+        }        
 
-        // Checking math
-        
+        // Checking math methods        
         List<Float> displaySize = new ArrayList<>();
         List<String> oem = new ArrayList<>();
         for (Cell cell : cellPhones.values()) {
@@ -464,15 +371,13 @@ public class Cell {
             if (cell.oem != null) oem.add(cell.oem);
         }
 
-        System.out.println("Mean: " + calculateMean(displaySize));
-        System.out.println("Median: " + calculateMedian(displaySize));
-        System.out.println("Unique: " + countUniqueValues(oem));
+        System.out.println("Mean of displaySize: " + calculateMean(displaySize));
+        System.out.println("Median of displaySize: " + calculateMedian(displaySize));
+        System.out.println("Unique values in oem: " + countUniqueValues(oem));
 
-        System.out.println("");  // Just making output look nicer
-        
+        System.out.println();  // Just making output look nicer        
 
-        // Checking Report questions
-        
+        // Checking Report question methods        
         String highestAvgOem = oemHighestAvg(cellPhones);
         System.out.println("Company with highest average weight: " + highestAvgOem);
 
@@ -483,7 +388,6 @@ public class Cell {
         System.out.println("Number of phones with only one feature sensor: " + singleFeatureCount);
 
         int mostPhonesYear = launchedMost(cellPhones);
-        System.out.println("Year with most phones launched after 1999: " + mostPhonesYear);
-        
+        System.out.println("Year with most phones launched after 1999: " + mostPhonesYear);        
     }
 }
