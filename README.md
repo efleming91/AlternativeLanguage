@@ -4,8 +4,6 @@ Submitted by: **Ethan Fleming**
 
 This program: **Reads in a CSV file that has statistics for 1,000 cell phones. Cleans the data. Creates Cell objects for each line, with additional methods for printing information, calculating statistics, listing unique values, ability to add an object, and ability to delete an object.**
 
-Time spent: **4** hours so far
-
 ## Report
 #### Which programming language and version did you pick?
 

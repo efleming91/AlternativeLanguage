@@ -127,7 +127,44 @@ public class Cell {
             }
         }
         return null;
-    }
+    }    
+
+    // Getters and Setters
+    public String getOem() { return oem; }
+    public void setOem(String oem) { this.oem = cleanDefault(oem); }
+
+    public String getModel() { return model; }
+    public void setModel(String model) { this.model = cleanDefault(model); }
+
+    public Integer getLaunchAnnounced() { return launchAnnounced; }
+    public void setLaunchAnnounced(String launchAnnounced) { this.launchAnnounced = cleanLaunchAnnounced(cleanDefault(launchAnnounced)); }
+
+    public String getLaunchStatus() { return launchStatus; }
+    public void setLaunchStatus(String launchStatus) { this.launchStatus = cleanLaunchStatus(cleanDefault(launchStatus)); }
+
+    public String getBodyDimensions() { return bodyDimensions; }
+    public void setBodyDimensions(String bodyDimensions) { this.bodyDimensions = cleanDefault(bodyDimensions); }
+
+    public Float getBodyWeight() { return bodyWeight; }
+    public void setBodyWeight(String bodyWeight) { this.bodyWeight = cleanBodyWeight(cleanDefault(bodyWeight)); }
+
+    public String getBodySim() { return bodySim; }
+    public void setBodySim(String bodySim) { this.bodySim = cleanBodySim(bodySim); }
+
+    public String getDisplayType() { return displayType; }
+    public void setDisplayType(String displayType) { this.displayType = cleanDefault(displayType); }
+
+    public Float getDisplaySize() { return displaySize; }
+    public void setDisplaySize(String displaySize) { this.displaySize = cleanDisplaySize(cleanDefault(displaySize)); }
+
+    public String getDisplayResolution() { return displayResolution; }
+    public void setDisplayResolution(String displayResolution) { this.displayResolution = cleanDefault(displayResolution); }
+
+    public String getFeaturesSensors() { return featuresSensors; }
+    public void setFeaturesSensors(String featuresSensors) { this.featuresSensors = cleanFeaturesSensors(featuresSensors); }
+
+    public String getPlatformOs() { return platformOs; }
+    public void setPlatformOs(String platformOs) { this.platformOs = cleanPlatformOs(cleanDefault(platformOs)); }
 
     // Converts object details to string for printing
     @Override
