@@ -83,6 +83,7 @@ public class Cell {
         if (data == null || data.trim().isEmpty() || data.equals("-")) {
             return null;
         }
+
         return data.trim();
     }
 
@@ -95,6 +96,7 @@ public class Cell {
                 return Integer.parseInt(m.group(1));
             }
         }
+
         return null;
     }
 
@@ -105,7 +107,7 @@ public class Cell {
         if (data != null && (data.equals("Discontinued") || data.equals("Cancelled"))) {
             return data;
         } else {
-            return cleanLaunchAnnounced(data) != null ? data : null;
+            return Integer.toString(cleanLaunchAnnounced(data));
         }
     }
 
@@ -115,6 +117,7 @@ public class Cell {
         if (data != null && data.matches("\\d+ g.*")) {
             return Float.parseFloat(data.substring(0, data.indexOf(' ')));
         }
+
         return null;
     }
 
@@ -125,6 +128,7 @@ public class Cell {
         if (data != null && (data.equalsIgnoreCase("No") || data.equalsIgnoreCase("Yes"))) {
             return null;
         }
+
         return cleanDefault(data);
     }
 
@@ -134,6 +138,7 @@ public class Cell {
         if (data != null && data.matches("\\d+(\\.\\d+)? inches.*")) {
             return Float.parseFloat(data.substring(0, data.indexOf(' ')));
         }
+
         return null;
     }
 
@@ -144,6 +149,7 @@ public class Cell {
         if (data != null && data.matches("^\\d+(\\.\\d+)?$")) {
             return null;
         }
+
         return cleanDefault(data);
     }
 
@@ -163,6 +169,7 @@ public class Cell {
                 return data.trim();
             }
         }
+
         return null;
     }    
 
@@ -172,6 +179,7 @@ public class Cell {
         if (data == null || data.isEmpty()) {
             return 0.0;
         }
+
         double sum = 0.0;
         for (Float num : data) {
             sum += num;
@@ -185,18 +193,84 @@ public class Cell {
         if (data == null || data.isEmpty()) {
             return null;
         }
+
         Collections.sort(data);
-        int middle = data.size() / 2;
+        int median = data.size() / 2;
         if (data.size() % 2 == 0) {
-            return (data.get(middle - 1) + data.get(middle)) / 2.0f;
+            return (data.get(median - 1) + data.get(median)) / 2.0f;
         } else {
-            return data.get(middle);
+            return data.get(median);
         }
     }
 
     // Sums unique values of list of inputs
     public static int countUniqueValues(List<String> data) {
         return new HashSet<>(data).size();
+    }
+
+    public static String oemHighestAvg(HashMap<Integer, Cell> cells) {
+        Map<String, List<Float>> weights = new HashMap<>();
+        for (Cell cell : cells.values()) {
+            if (cell.bodyWeight != null) {
+                weights.putIfAbsent(cell.oem, new ArrayList<>());
+                weights.get(cell.oem).add(cell.bodyWeight);
+            }
+        }
+
+        String highestOem = null;
+        double highestAvg = 0;
+        for (Map.Entry<String, List<Float>> entry : weights.entrySet()) {
+            double avg = calculateMean(new ArrayList<>(entry.getValue())); 
+            if (avg > highestAvg) {
+                highestAvg = avg;
+                highestOem = entry.getKey();
+            }
+        }
+
+        return highestOem;
+    }
+
+    public static List<String> announcedDifferentYears(HashMap<Integer, Cell> cells) {
+        List<String> result = new ArrayList<>();
+        for (Cell cell : cells.values()) {
+            if (cell.launchAnnounced != null && cell.launchStatus != null &&
+                !cell.launchStatus.equals("Discontinued") && 
+                !cell.launchStatus.equals("Cancelled") && 
+                !Integer.toString(cell.launchAnnounced).equals(cell.launchStatus)) {
+                result.add(cell.oem + " - " + cell.model);
+            }
+        }
+
+        return result;
+    }
+
+    public static int featuresSingle(HashMap<Integer, Cell> cells) {
+        int count = 0;
+        for (Cell cell : cells.values()) {
+            if (cell.featuresSensors != null && !cell.featuresSensors.contains(",")) {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    public static int launchedMost(HashMap<Integer, Cell> cells) {
+        Map<Integer, Integer> count = new HashMap<>();
+        for (Cell cell : cells.values()) {
+            if (cell.launchAnnounced != null && cell.launchAnnounced > 1999) {
+                count.put(cell.launchAnnounced, count.getOrDefault(cell.launchAnnounced, 0) + 1);
+            }
+        }
+
+        int maxYear = 0, maxCount = 0;
+        for (Map.Entry<Integer, Integer> entry : count.entrySet()) {
+            if (entry.getValue() > maxCount) {
+                maxCount = entry.getValue();
+                maxYear = entry.getKey();
+            }
+        }
+        return maxYear;
     }
 
     // Converts object details to string for printing
@@ -249,14 +323,17 @@ public class Cell {
         /*
         int count = 2;
         for (Map.Entry<Integer, Cell> entry : cellPhones.entrySet()) {
-            if (count == 847)
+            if (count == 6)
+            {
                 System.out.println("ID: " + entry.getKey() + "\n" + entry.getValue());
                 break;
+            }
             count++;
         }
         */
 
         // Checking math
+        /*
         List<Float> displaySize = new ArrayList<>();
         List<String> oem = new ArrayList<>();
         for (Cell cell : cellPhones.values()) {
@@ -267,5 +344,21 @@ public class Cell {
         System.out.println("Mean: " + calculateMean(displaySize));
         System.out.println("Median: " + calculateMedian(displaySize));
         System.out.println("Unique: " + countUniqueValues(oem));
+        */
+
+        // Checking Report questions
+        
+        String highestAvgOem = oemHighestAvg(cellPhones);
+        System.out.println("Company with highest average weight: " + highestAvgOem);
+
+        List<String> diffYearReleases = announcedDifferentYears(cellPhones);
+        System.out.println("Phones announced and released in different years: " + diffYearReleases);
+
+        int singleFeatureCount = featuresSingle(cellPhones);
+        System.out.println("Number of phones with only one feature sensor: " + singleFeatureCount);
+
+        int mostPhonesYear = launchedMost(cellPhones);
+        System.out.println("Year with most phones launched after 1999: " + mostPhonesYear);
+        
     }
 }

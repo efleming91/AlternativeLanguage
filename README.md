@@ -25,16 +25,23 @@ Blah
 
 #### What company (oem) has the highest average weight of the phone body?
 
-Blah
+Lenovo
 
-#### Was there any phones that were announced in one year and released in another? What are they? Give me the oem and models.
+#### Were there any phones that were announced in one year and released in another? What are they? Give me the oem and models.
 
-Blah
+Motorola - One Hyper <br />
+Motorola - Razr 2019 <br />
+Xiaomi - Redmi K30 5G <br />
+Xiaomi - Mi Mix Alpha
 
 #### How many phones have only one feature sensor?
 
-Blah
+432
 
 #### What year had the most phones launched in any year later than 1999? 
 
-Blah
+2019
+
+#### Output image
+
+![Output image](ResultsImage.png)
