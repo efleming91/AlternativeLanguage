@@ -371,7 +371,6 @@ public class Cell {
             return;
         }
         
-
         // Validate missing or "-" data is replaced with null
         for (Cell cell : cellPhones.values()) {
             if (cell.getOem() != null && (cell.getOem().isEmpty() || cell.getOem().equals("-"))) {
@@ -437,8 +436,7 @@ public class Cell {
         }
         if (!validData) {
             return;
-        }
-        
+        }        
 
         //Testing
 
