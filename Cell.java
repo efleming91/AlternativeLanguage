@@ -40,6 +40,43 @@ public class Cell {
         this.platformOs = cleanPlatformOs(cleanDefault(platformOs));
     }
 
+    // Getters and Setters
+    public String getOem() { return oem; }
+    public void setOem(String oem) { this.oem = cleanDefault(oem); }
+
+    public String getModel() { return model; }
+    public void setModel(String model) { this.model = cleanDefault(model); }
+
+    public Integer getLaunchAnnounced() { return launchAnnounced; }
+    public void setLaunchAnnounced(String launchAnnounced) { this.launchAnnounced = cleanLaunchAnnounced(cleanDefault(launchAnnounced)); }
+
+    public String getLaunchStatus() { return launchStatus; }
+    public void setLaunchStatus(String launchStatus) { this.launchStatus = cleanLaunchStatus(cleanDefault(launchStatus)); }
+
+    public String getBodyDimensions() { return bodyDimensions; }
+    public void setBodyDimensions(String bodyDimensions) { this.bodyDimensions = cleanDefault(bodyDimensions); }
+
+    public Float getBodyWeight() { return bodyWeight; }
+    public void setBodyWeight(String bodyWeight) { this.bodyWeight = cleanBodyWeight(cleanDefault(bodyWeight)); }
+
+    public String getBodySim() { return bodySim; }
+    public void setBodySim(String bodySim) { this.bodySim = cleanBodySim(bodySim); }
+
+    public String getDisplayType() { return displayType; }
+    public void setDisplayType(String displayType) { this.displayType = cleanDefault(displayType); }
+
+    public Float getDisplaySize() { return displaySize; }
+    public void setDisplaySize(String displaySize) { this.displaySize = cleanDisplaySize(cleanDefault(displaySize)); }
+
+    public String getDisplayResolution() { return displayResolution; }
+    public void setDisplayResolution(String displayResolution) { this.displayResolution = cleanDefault(displayResolution); }
+
+    public String getFeaturesSensors() { return featuresSensors; }
+    public void setFeaturesSensors(String featuresSensors) { this.featuresSensors = cleanFeaturesSensors(featuresSensors); }
+
+    public String getPlatformOs() { return platformOs; }
+    public void setPlatformOs(String platformOs) { this.platformOs = cleanPlatformOs(cleanDefault(platformOs)); }
+
     // Basic cleaning of input string
     // Checks for known null values and sets null if column is empty or filled by '-'
     private String cleanDefault(String data) {
@@ -129,42 +166,38 @@ public class Cell {
         return null;
     }    
 
-    // Getters and Setters
-    public String getOem() { return oem; }
-    public void setOem(String oem) { this.oem = cleanDefault(oem); }
+    // Calculates mean of list of inputs
+    // Returns 0.0 if list is null or unpopulated
+    public static double calculateMean(List<Float> data) {
+        if (data == null || data.isEmpty()) {
+            return 0.0;
+        }
+        double sum = 0.0;
+        for (Float num : data) {
+            sum += num;
+        }
+        return sum / data.size();
+    }
 
-    public String getModel() { return model; }
-    public void setModel(String model) { this.model = cleanDefault(model); }
+    // Calculates median of list of inputs
+    // Returns null if list is null or unpopulated
+    public static Float calculateMedian(List<Float> data) {
+        if (data == null || data.isEmpty()) {
+            return null;
+        }
+        Collections.sort(data);
+        int middle = data.size() / 2;
+        if (data.size() % 2 == 0) {
+            return (data.get(middle - 1) + data.get(middle)) / 2.0f;
+        } else {
+            return data.get(middle);
+        }
+    }
 
-    public Integer getLaunchAnnounced() { return launchAnnounced; }
-    public void setLaunchAnnounced(String launchAnnounced) { this.launchAnnounced = cleanLaunchAnnounced(cleanDefault(launchAnnounced)); }
-
-    public String getLaunchStatus() { return launchStatus; }
-    public void setLaunchStatus(String launchStatus) { this.launchStatus = cleanLaunchStatus(cleanDefault(launchStatus)); }
-
-    public String getBodyDimensions() { return bodyDimensions; }
-    public void setBodyDimensions(String bodyDimensions) { this.bodyDimensions = cleanDefault(bodyDimensions); }
-
-    public Float getBodyWeight() { return bodyWeight; }
-    public void setBodyWeight(String bodyWeight) { this.bodyWeight = cleanBodyWeight(cleanDefault(bodyWeight)); }
-
-    public String getBodySim() { return bodySim; }
-    public void setBodySim(String bodySim) { this.bodySim = cleanBodySim(bodySim); }
-
-    public String getDisplayType() { return displayType; }
-    public void setDisplayType(String displayType) { this.displayType = cleanDefault(displayType); }
-
-    public Float getDisplaySize() { return displaySize; }
-    public void setDisplaySize(String displaySize) { this.displaySize = cleanDisplaySize(cleanDefault(displaySize)); }
-
-    public String getDisplayResolution() { return displayResolution; }
-    public void setDisplayResolution(String displayResolution) { this.displayResolution = cleanDefault(displayResolution); }
-
-    public String getFeaturesSensors() { return featuresSensors; }
-    public void setFeaturesSensors(String featuresSensors) { this.featuresSensors = cleanFeaturesSensors(featuresSensors); }
-
-    public String getPlatformOs() { return platformOs; }
-    public void setPlatformOs(String platformOs) { this.platformOs = cleanPlatformOs(cleanDefault(platformOs)); }
+    // Sums unique values of list of inputs
+    public static int countUniqueValues(List<String> data) {
+        return new HashSet<>(data).size();
+    }
 
     // Converts object details to string for printing
     @Override
@@ -187,9 +220,9 @@ public class Cell {
         HashMap<Integer, Cell> cellPhones = new HashMap<>();
         int id = 1;
 
-        // Reads in .csv file and handles each line
+        // Read in .csv file and handle each line
         try (Reader in = Files.newBufferedReader(Paths.get("cells.csv"))) {
-            // Uses Apache Commons CSV library to simplify csv parsing
+            // Use Apache Commons CSV library to simplify csv parsing
             Iterable<CSVRecord> records = CSVFormat.DEFAULT
                 .withFirstRecordAsHeader()
                 .parse(in);
@@ -211,11 +244,28 @@ public class Cell {
         }
 
         //Testing
+
+        // Checking cleaning
+        /*
         int count = 2;
         for (Map.Entry<Integer, Cell> entry : cellPhones.entrySet()) {
             if (count == 847)
                 System.out.println("ID: " + entry.getKey() + "\n" + entry.getValue());
+                break;
             count++;
         }
+        */
+
+        // Checking math
+        List<Float> displaySize = new ArrayList<>();
+        List<String> oem = new ArrayList<>();
+        for (Cell cell : cellPhones.values()) {
+            if (cell.displaySize != null) displaySize.add(cell.displaySize);
+            if (cell.oem != null) oem.add(cell.oem);
+        }
+
+        System.out.println("Mean: " + calculateMean(displaySize));
+        System.out.println("Median: " + calculateMedian(displaySize));
+        System.out.println("Unique: " + countUniqueValues(oem));
     }
 }
