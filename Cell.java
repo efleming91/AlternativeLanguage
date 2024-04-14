@@ -208,6 +208,7 @@ public class Cell {
         return new HashSet<>(data).size();
     }
 
+    // Calculates highest average weight by oem
     public static String oemHighestAvg(HashMap<Integer, Cell> cells) {
         Map<String, List<Float>> weights = new HashMap<>();
         for (Cell cell : cells.values()) {
@@ -230,6 +231,8 @@ public class Cell {
         return highestOem;
     }
 
+    // Finds any instances where cell launch_announced and launch_status were in different years
+    // Accounts for Discontinue and Cancelled statuses
     public static List<String> announcedDifferentYears(HashMap<Integer, Cell> cells) {
         List<String> result = new ArrayList<>();
         for (Cell cell : cells.values()) {
@@ -244,6 +247,7 @@ public class Cell {
         return result;
     }
 
+    // Counts objects that have only one features_sensor input
     public static int featuresSingle(HashMap<Integer, Cell> cells) {
         int count = 0;
         for (Cell cell : cells.values()) {
@@ -255,6 +259,7 @@ public class Cell {
         return count;
     }
 
+    // Finds year that had most phones launched post-1999
     public static int launchedMost(HashMap<Integer, Cell> cells) {
         Map<Integer, Integer> count = new HashMap<>();
         for (Cell cell : cells.values()) {
@@ -304,11 +309,18 @@ public class Cell {
             // Each line is turned into a Cell object and added to the HashMap    
             for (CSVRecord record : records) {
                 Cell cell = new Cell(
-                    record.get("oem"), record.get("model"), record.get("launch_announced"), 
-                    record.get("launch_status"), record.get("body_dimensions"), 
-                    record.get("body_weight"), record.get("body_sim"), record.get("display_type"), 
-                    record.get("display_size"), record.get("display_resolution"), 
-                    record.get("features_sensors"), record.get("platform_os")
+                    record.get("oem"), 
+                    record.get("model"), 
+                    record.get("launch_announced"), 
+                    record.get("launch_status"), 
+                    record.get("body_dimensions"), 
+                    record.get("body_weight"), 
+                    record.get("body_sim"), 
+                    record.get("display_type"), 
+                    record.get("display_size"), 
+                    record.get("display_resolution"), 
+                    record.get("features_sensors"), 
+                    record.get("platform_os")
                 );
                 
                 cellPhones.put(id++, cell);
@@ -323,8 +335,7 @@ public class Cell {
         /*
         int count = 2;
         for (Map.Entry<Integer, Cell> entry : cellPhones.entrySet()) {
-            if (count == 6)
-            {
+            if (count == 6) {
                 System.out.println("ID: " + entry.getKey() + "\n" + entry.getValue());
                 break;
             }
