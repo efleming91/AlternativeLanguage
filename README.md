@@ -59,7 +59,7 @@ This is part of Java's New I/O (NIO) library that provides comprehensive support
 
 ##### org.junit
 
-This library is a popular Java library used for writing and running repeatable tests in a Java application, providing annotations and assertions to help structure tests and verify conditions during execution. It is essential for implementing unit testing in Java projects, allowing developers to efficiently identify bugs and ensure that their code meets its design and behaves as intended. It was necessary for creating and running the JUnit tests.
+This library is used for writing and running repeatable tests, providing annotations and assertions to help structure tests and verify conditions during execution. It is essential for implementing unit testing, allowing me to efficiently identify bugs and ensure that the code behaves as intended. It was necessary for creating and running the JUnit tests.
 
 #### Answer the following questions (and provide a corresponding screen showing output answering them):
 
