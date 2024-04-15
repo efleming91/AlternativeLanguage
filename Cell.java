@@ -286,6 +286,7 @@ public class Cell {
                 maxYear = entry.getKey();
             }
         }
+
         return maxYear;
     }
 
@@ -359,6 +360,7 @@ public class Cell {
                 System.out.println("ID: " + entry.getKey() + "\n" + entry.getValue());
                 break;
             }
+            
             count++;
         }        
 
@@ -406,6 +408,7 @@ public class Cell {
                 buffer.append(c);
             }
         }
+
         tokens.add(buffer.toString().trim());
         return tokens;
     }
