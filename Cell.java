@@ -3,10 +3,6 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;  // Not really sure why this isn't covered by util.* call
 import java.util.regex.Pattern;  // ^^
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.Path;
-import org.apache.commons.csv.*;  // Requires commons-csv-1.10.0.jar library file
 
 // Class representing full details of a cell phone 
 public class Cell {
@@ -311,55 +307,45 @@ public class Cell {
     }
 
     public static void main(String[] args) {
-        Path path = Paths.get("cells.csv");
+        String filePath = "cells.csv";
+        File csvFile = new File(filePath);
         HashMap<Integer, Cell> cellPhones = new HashMap<>();
         int id = 1;
 
         // Check for issues with file
-        if (!Files.exists(path)) {
+        if (!csvFile.exists()) {
             System.out.println("Error: The file does not exist.");
             return;
-        }
-        else if (Files.exists(path) && new File(path.toString()).length() == 0) {
+        } else if (csvFile.length() == 0) {
             System.out.println("Error: The file is empty.");
             return;
         }
 
         // Read in .csv file and handle each line
-        try (Reader in = Files.newBufferedReader(path)) {
-            // Use Apache Commons CSV library to simplify csv parsing
-            CSVFormat format = CSVFormat.DEFAULT.builder()
-                    .setHeader()
-                    .setSkipHeaderRecord(true)
-                    .build();
-
-            Iterable<CSVRecord> records = format.parse(in);
-
-            // Check for issues with file
-            if (!records.iterator().hasNext()) {
+        try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
+            String line = br.readLine(); // skip header
+            if (line == null || (line = br.readLine()) == null) {
                 System.out.println("Error: The file contains only headers or is empty.");
                 return;
             }
-            
-            // Each line is turned into a Cell object and added to the HashMap    
-            for (CSVRecord record : records) {
+            do {
+                List<String> record = parseCsvLine(line);
                 Cell cell = new Cell(
-                    record.get("oem"), 
-                    record.get("model"), 
-                    record.get("launch_announced"), 
-                    record.get("launch_status"), 
-                    record.get("body_dimensions"), 
-                    record.get("body_weight"), 
-                    record.get("body_sim"), 
-                    record.get("display_type"), 
-                    record.get("display_size"), 
-                    record.get("display_resolution"), 
-                    record.get("features_sensors"), 
-                    record.get("platform_os")
+                    record.get(0), 
+                    record.get(1), 
+                    record.get(2), 
+                    record.get(3),
+                    record.get(4), 
+                    record.get(5), 
+                    record.get(6), 
+                    record.get(7),
+                    record.get(8), 
+                    record.get(9), 
+                    record.get(10), 
+                    record.get(11)
                 );
-                
                 cellPhones.put(id++, cell);
-            }
+            } while ((line = br.readLine()) != null);
         } catch (IOException e) {
             System.out.println("Error reading file: " + e.getMessage());
         }
@@ -402,5 +388,25 @@ public class Cell {
 
         int mostPhonesYear = launchedMost(cellPhones);
         System.out.println("Year with most phones launched after 1999: " + mostPhonesYear);        
+    }    
+
+    // Manual parsing as Apache Commons CSV is not available for Replit
+    // Tried everything before giving up and adding this
+    private static List<String> parseCsvLine(String line) {
+        List<String> tokens = new ArrayList<>();
+        boolean inQuotes = false;
+        StringBuilder buffer = new StringBuilder();
+        for (char c : line.toCharArray()) {
+            if (c == '"') {
+                inQuotes = !inQuotes;
+            } else if (c == ',' && !inQuotes) {
+                tokens.add(buffer.toString().trim());
+                buffer = new StringBuilder();
+            } else {
+                buffer.append(c);
+            }
+        }
+        tokens.add(buffer.toString().trim());
+        return tokens;
     }
 }

@@ -55,11 +55,11 @@ This library is essential for handling regular expressions in Java, which are us
 
 ##### java.nio.file
 
-This is part of Java's New I/O (NIO) library that provides comprehensive support for file and file system manipulation. It is designed to provide more performant I/O operations than the older java.io library. The file library was necessary to be able to read in and work with a file.
+This is part of Java's New I/O (NIO) library that provides comprehensive support for file and file system manipulation. It is designed to provide more performant I/O operations than the older java.io library. The file library was necessary to be able to create the JUnit tests.
 
-##### org.apache.commons.csv
+##### org.junit
 
-This library is a part of the Apache Commons project, providing tools to assist in reading and writing CSV format files. This library became necessary when I realized the columns could have quotes or commas within their inputs. The initial line reading wasn't able to handle this kind of input and I had to bring in a non-standard library to pick up the slack.
+This library is a popular Java library used for writing and running repeatable tests in a Java application, providing annotations and assertions to help structure tests and verify conditions during execution. It is essential for implementing unit testing in Java projects, allowing developers to efficiently identify bugs and ensure that their code meets its design and behaves as intended. It was necessary for creating and running the JUnit tests.
 
 #### Answer the following questions (and provide a corresponding screen showing output answering them):
 

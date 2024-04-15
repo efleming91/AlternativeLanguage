@@ -3,9 +3,9 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
 import org.junit.Test;
+import java.util.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
 
 public class CellTest {
 
